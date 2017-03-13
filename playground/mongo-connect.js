@@ -21,16 +21,16 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', (err, db) => {
     db.close();
 
 
-    // // inserting a doc into Users collection
-    // db.collection('Users').insertOne({
-    //     name: 'sajan sainju',
-    //     age: 23,
-    //     location: 'Bhaktapur, Nepal'
-    // }, (err, result) => {
-    //     if(err){
-    //         return console.log(err);
-    //     }
-    //     console.log(JSON.stringify(result.ops, undefined, 2));
-    // });
-    // db.close();
+    // inserting a doc into Users collection
+    db.collection('Users').insertOne({
+        name: 'sajan sainju',
+        age: 23,
+        location: 'Bhaktapur, Nepal'
+    }, (err, result) => {
+        if(err){
+            return console.log(err);
+        }
+        console.log(JSON.stringify(result.ops, undefined, 2));
+    });
+    db.close();
 } )
