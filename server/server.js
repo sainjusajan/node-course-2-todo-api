@@ -1,6 +1,7 @@
+const _ = require('lodash');
 var app = require('express')();
-var bodyParser = require('body-parser');
 
+var bodyParser = require('body-parser');
 // object destructuring
 var {mongoose} = require('./db/mongoose');
 var {Todo} = require('./models/todo');
@@ -67,6 +68,29 @@ app.delete('/todos/:id', (req, res) => {
     }).catch( (e) => {
         res.send(e);
     })
+})
+
+app.patch('/todos/:id', (req, res) => {
+  var id = req.params.id;
+  // just picking the text and completed values from requested json data
+  var body = _.pick(req.body, ['text', 'completed']);
+  if(! ObjectID.isValid(id)){
+    return res.status(404).send({})
+  }
+  if(_.isBoolean(body.completed) && body.completed){
+    body.completedAt = new Date().getTime();
+  }else{
+    body.completedAt = null;
+  }
+  console.log(body)
+  Todo.findByIdAndUpdate(id, {$set: body}, {new:true}).then( (todo) => {
+    if(!todo){
+      return res.status(404).send();
+    }
+    res.send({todo})
+  }).catch( (e) => {
+    res.status(400).send(e)
+  })
 })
 
 // listening to the port
