@@ -42,3 +42,11 @@ you can update the data fetched via update operators like $set: {}, $inc: {}
         "test": "mocha server/**/*.test.js",
         "test-watch": "nodemon --exec \"npm test\""
       }
+
+
+while deplying to the heroku , following details should be considered
+1. setup start script in package.json as : "start" : "node server/server.js"
+2. setup port to the process.env.PORT || 3000
+3. setup engines in package.json as "engines" : { "node": "6.9.2" }
+4. create heroku app by: heroku create
+

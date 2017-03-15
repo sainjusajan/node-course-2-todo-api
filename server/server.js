@@ -8,6 +8,8 @@ var {User} = require('./models/user');
 
 var {ObjectID} = require('mongodb')
 
+const port = process.env.PORT || 3000
+
 // using middleware to parse the json to-and-from
 app.use(bodyParser.json());
 
@@ -23,10 +25,7 @@ app.post('/todos', (req, res) => {
   })
 })
 
-
-app.post('/events', (req, res) => {
-    console.log(req);
-})
+// getting all the todos
 app.get('/todos', (req, res) => {
   Todo.find().then( (todos) => {
     res.send({todos})
@@ -35,6 +34,7 @@ app.get('/todos', (req, res) => {
   })
 })
 
+// getting user by specific id route
 app.get('/users/:id', (req, res) => {
  var id = req.params.id;
  if(! ObjectID.isValid(id)){
@@ -51,9 +51,27 @@ app.get('/users/:id', (req, res) => {
     })
 })
 
+// deleting todo by id route
+app.delete('/todos/:id', (req, res) => {
+    var id = req.params.id;
+
+    if( !ObjectID.isValid(id)){
+        return res.status(400).send('Invalid ID')
+    }
+
+    Todo.findByIdAndRemove(id).then( (doc) => {
+        if(!doc){
+            return res.status(404).send({})
+        }
+        res.send(doc)
+    }, (err) => {
+        res.status(400).send({})
+    })
+})
+
 // listening to the port
-app.listen(3000, () => {
-  console.log('Server is running on port : 3000')
+app.listen(port, () => {
+  console.log(`Server is running on port : ${port}`)
 })
 
 module.exports = {app}

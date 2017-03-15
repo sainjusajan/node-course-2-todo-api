@@ -121,3 +121,15 @@ describe('GET /users/:id', () => {
         .end(done)
   })
 })
+
+describe('DELETE /todos/:id', () => {
+  it('should delete a specified todo', (done) => {
+    request(app)
+        .delete(`/todos/${todos[0].id}`)
+        .expect(200)
+        .expect( (res) => {
+          expect(res.body.todo.text).toBe(todos[0].text)
+        })
+        .end(done)
+  })
+})
