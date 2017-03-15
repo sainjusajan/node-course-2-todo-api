@@ -9,9 +9,11 @@ const {ObjectID} = require('mongodb')
 // clearing database before every test
 const todos = [
   {
+    _id: new ObjectID(),
     text: "first todo note"
   },
   {
+    _id: new ObjectID(),
     text: "second todo note"
   }
 ];
@@ -31,7 +33,7 @@ const users = [
 
 beforeEach( (done) => {
   Todo.remove({}).then( () => {
-    return Todo.insertMany(todos)
+    Todo.insertMany(todos)
   });
 
   User.remove({}).then( () => {
@@ -123,13 +125,29 @@ describe('GET /users/:id', () => {
 })
 
 describe('DELETE /todos/:id', () => {
-  it('should delete a specified todo', (done) => {
+  it('should delete a specific todo', (done) => {
+    var id = todos[0]._id;
     request(app)
-        .delete(`/todos/${todos[0].id}`)
+        .delete(`/todos/${id}`)
         .expect(200)
         .expect( (res) => {
           expect(res.body.todo.text).toBe(todos[0].text)
         })
         .end(done)
+  });
+
+  it('should return 404 for todo not found', (done) => {
+    var new_id = new ObjectID();
+      request(app)
+          .delete(`/todos/${new_id}`)
+          .expect(404)
+          .end(done);
+  });
+
+  it('should return 404 if object id is invalid', (done) => {
+      request(app)
+          .delete('/todos/123abc')
+          .expect(404)
+          .end(done);
   })
 })
