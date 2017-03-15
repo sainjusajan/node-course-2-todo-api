@@ -3,17 +3,41 @@ const request = require('supertest')
 
 const {app} = require('./../server')
 const {Todo} = require('./../models/todo')
-const {User} = require('./../models/todo')
+const {User} = require('./../models/user')
+const {ObjectID} = require('mongodb')
 
 // clearing database before every test
 const todos = [
-  {text: "first todo note"},
-  {text: "second todo note"}
+  {
+    text: "first todo note"
+  },
+  {
+    text: "second todo note"
+  }
 ];
+
+const users = [
+  {
+    _id : new ObjectID(),
+    name : 'sajan sainju',
+    email: 'tsajansainju@gmail.com'
+  },
+  {
+    _id : new ObjectID(),
+    name : 'ram lohala',
+    email: 'lohalaramu@gmail.com'
+  }
+]
+
 beforeEach( (done) => {
   Todo.remove({}).then( () => {
     return Todo.insertMany(todos)
-  }).then( () => done());
+  });
+
+  User.remove({}).then( () => {
+    return User.insertMany(users)
+  }).then( () => done())
+
 })
 
 /*
@@ -67,7 +91,6 @@ describe('POST /todos', () => {
   });
 });
 
-
 describe('GET /todos', () => {
   it('should get all the todos', (done) => {
     request(app)
@@ -77,5 +100,24 @@ describe('GET /todos', () => {
       expect(res.body.todos.length).toBe(2)
     })
     .end(done);
+  })
+})
+
+describe('GET /users/:id', () => {
+  it('should get the specific user', (done) => {
+    request(app)
+    .get(`/users/${users[0]._id}`)
+    .expect(200)
+    .expect( (res) => {
+      expect(res.body.user.email).toBe(users[0].email);
+    })
+        .end(done);
+  });
+
+  it('should return 404 for non object ID', (done) => {
+    request(app)
+        .get('/users/123abc')
+        .expect(404)
+        .end(done)
   })
 })

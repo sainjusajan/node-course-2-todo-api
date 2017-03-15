@@ -1,6 +1,6 @@
 
-// const express = require('express')
-// const app = express()
+const express = require('express')
+const app = express()
 
 const app = require('express')();
 
@@ -319,6 +319,8 @@ app.get('/events', (err, res) => {
             ]
         }
     ]
+
+
     res.send(events);
 
 })
