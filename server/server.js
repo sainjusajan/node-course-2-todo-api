@@ -1,3 +1,5 @@
+require('./../config/config.js')
+
 const _ = require('lodash');
 var app = require('express')();
 
@@ -9,7 +11,7 @@ var {User} = require('./models/user');
 
 var {ObjectID} = require('mongodb')
 
-const port = process.env.PORT || 3000
+const port = process.env.PORT
 
 // using middleware to parse the json to-and-from
 app.use(bodyParser.json());
@@ -24,7 +26,22 @@ app.post('/todos', (req, res) => {
   }, (error) => {
     res.status(400).send(error)
   })
+});
+
+// creating new unique user
+app.post('/users', (req, res) => {
+  var body= _.pick(req.body, ['email', 'password', 'name'])
+  var user = new User(body);
+  user.save().then( () => {
+    return user.generateToken();
+    // res.send(user)
+  }).then( (token) => {
+    res.header('x-auth', token).send(user)
+  }).catch( (error) => {
+    res.status(400).send(error)
+  })
 })
+
 
 // getting all the todos
 app.get('/todos', (req, res) => {
@@ -82,7 +99,7 @@ app.patch('/todos/:id', (req, res) => {
   }else{
     body.completedAt = null;
   }
-  
+
   Todo.findByIdAndUpdate(id, {$set: body}, {new:true}).then( (todo) => {
     if(!todo){
       return res.status(404).send();
