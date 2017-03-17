@@ -53,20 +53,20 @@ app.get('/todos', (req, res) => {
 })
 
 // getting user by specific id route
-app.get('/users/:id', (req, res) => {
+app.get('/todos/:id', (req, res) => {
  var id = req.params.id;
  if(! ObjectID.isValid(id)){
    res.status(404).send({})
  }
 
-  User.findById(id).then( (user) => {
-    if(!user){
+  Todo.findById(id).then( (todo) => {
+    if(!todo){
     return res.status(404).send({})
     }
-    res.send({user})
-  }, (e) => {
-    res.status(400).send({})
-    })
+    res.send({todo})
+  }).catch( (e) => {
+    res.status(400).send(e)
+  })
 })
 
 
@@ -75,10 +75,6 @@ app.get('/users/me', authenticate,  (req, res) => {
 
   res.send(req.user);
 
-})
-
-app.post('/nepal', (req, res) => {
-  res.send(req.body)
 })
 
 // deleting todo by id route
