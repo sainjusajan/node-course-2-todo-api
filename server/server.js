@@ -8,7 +8,7 @@ var bodyParser = require('body-parser');
 var {mongoose} = require('./db/mongoose');
 var {Todo} = require('./models/todo');
 var {User} = require('./models/user');
-
+var {authenticate} = require('./middleware/authenticate');
 var {ObjectID} = require('mongodb')
 
 const port = process.env.PORT
@@ -67,6 +67,18 @@ app.get('/users/:id', (req, res) => {
   }, (e) => {
     res.status(400).send({})
     })
+})
+
+
+// setting private routes that requires authentication
+app.get('/users/me', authenticate,  (req, res) => {
+
+  res.send(req.user);
+
+})
+
+app.post('/nepal', (req, res) => {
+  res.send(req.body)
 })
 
 // deleting todo by id route
